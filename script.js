@@ -8,14 +8,20 @@ stopRecordingButton.addEventListener("click", stopRecording);
 let recorder;
 
 async function startRecording() {
-  const stream = await navigator.mediaDevices.getDisplayMedia();
+  const constraints = {
+    audio: true,
+    video: {
+      displaySurface: "monitor"
+    }
+  };
+  const stream = await navigator.mediaDevices.getDisplayMedia(constraints);
   recorder = new MediaRecorder(stream);
   const chunks = [];
-  
+
   recorder.addEventListener("dataavailable", event => {
     chunks.push(event.data);
   });
-  
+
   recorder.addEventListener("stop", () => {
     const blob = new Blob(chunks, { type: "video/webm" });
     const url = URL.createObjectURL(blob);
@@ -23,7 +29,7 @@ async function startRecording() {
     downloadLink.style.display = "block";
     downloadLink.innerText = "Descargar video";
   });
-  
+
   recorder.start();
   startRecordingButton.disabled = true;
   stopRecordingButton.disabled = false;
